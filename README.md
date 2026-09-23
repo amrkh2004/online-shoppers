@@ -1,9 +1,10 @@
 # 🛒 Online Shoppers Purchasing Intention — Production ML Service
 
+[![CI/CD Pipeline](https://github.com/amrkh2004/online-shoppers/actions/workflows/ci_cd.yml/badge.svg)](https://github.com/amrkh2004/online-shoppers/actions)
 [![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.13-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.141+-009688.svg)](https://fastapi.tiangolo.com/)
 [![Docker](https://img.shields.io/badge/Docker-Multi--stage-2496ED.svg)](https://www.docker.com/)
-[![Test Coverage](https://img.shields.io/badge/Coverage-89%25-brightgreen.svg)](tests/)
+[![Test Coverage](https://img.shields.io/badge/Coverage-99%25-brightgreen.svg)](tests/)
 
 Production Machine Learning package and RESTful API for predicting online shoppers purchasing intention based on website session behavior.
 
