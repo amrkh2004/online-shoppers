@@ -13,5 +13,4 @@ venv/
 notebooks/
 tests/
 reports/
-README.md
 .pre-commit-config.yaml
