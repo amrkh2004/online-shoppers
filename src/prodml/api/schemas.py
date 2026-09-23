@@ -2,7 +2,7 @@
 Pydantic Schemas for FastAPI Endpoints.
 """
 
-from typing import List
+from typing import List, Literal
 
 from pydantic import BaseModel, Field
 
@@ -28,13 +28,15 @@ class ShopperInputSchema(BaseModel):
     SpecialDay: float = Field(
         0.0, ge=0.0, le=1.0, description="Closeness of site visiting time to a specific special day"
     )
-    Month: str = Field("May", description="Month of the visit (e.g. Feb, Mar, May, Oct, Nov)")
+    Month: Literal["Feb", "Mar", "May", "June", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] = Field(
+        "May", description="Month of the visit"
+    )
     OperatingSystems: int = Field(1, description="Operating system used by visitor")
     Browser: int = Field(2, description="Browser used by visitor")
     Region: int = Field(1, description="Geographic region of visitor")
     TrafficType: int = Field(1, description="Traffic source type")
-    VisitorType: str = Field(
-        "Returning_Visitor", description="Visitor type (Returning_Visitor, New_Visitor, Other)"
+    VisitorType: Literal["Returning_Visitor", "New_Visitor", "Other"] = Field(
+        "Returning_Visitor", description="Visitor type"
     )
     Weekend: bool = Field(False, description="Whether the visit date is on a weekend")
 

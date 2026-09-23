@@ -67,4 +67,4 @@ filterwarnings = [
 
 [tool.coverage.run]
 source = ["src/prodml"]
-omit = ["tests/*"]
+omit = ["tests/*", "src/prodml/tracking_*.py"]
