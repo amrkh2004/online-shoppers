@@ -44,3 +44,8 @@ Thumbs.db
 models/*
 !models/.gitkeep
 saved_model/
+
+# Experiment Tracking
+mlruns/
+mlflow.db
+wandb/
