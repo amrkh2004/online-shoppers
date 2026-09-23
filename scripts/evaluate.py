@@ -3,7 +3,7 @@ DVC Stage 3: Model Evaluation script outputting metrics.json.
 """
 
 import json
-from pathlib import Path
+
 import pandas as pd
 import yaml
 
@@ -40,7 +40,9 @@ def main():
     with open(metrics_file, "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
 
-    logger.info("Evaluation metrics exported", extra={"metrics_file": str(metrics_file), "metrics": metrics})
+    logger.info(
+        "Evaluation metrics exported", extra={"metrics_file": str(metrics_file), "metrics": metrics}
+    )
 
 
 if __name__ == "__main__":

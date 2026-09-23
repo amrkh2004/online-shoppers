@@ -32,11 +32,27 @@ dev = [
     "pytest>=7.4.0",
     "pytest-cov>=4.1.0",
     "httpx>=0.24.0",
-    "xgboost>=1.7.0"
+    "xgboost>=1.7.0",
+    "ruff>=0.1.0",
+    "black>=23.0.0",
+    "pre-commit>=3.0.0"
 ]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.black]
+line-length = 100
+target-version = ['py310', 'py311', 'py313']
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["notebooks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"

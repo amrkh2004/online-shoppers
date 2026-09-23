@@ -4,6 +4,7 @@ Data loading and preprocessing utilities for prodml.
 
 from pathlib import Path
 from typing import Tuple, Union
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
@@ -30,7 +31,11 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     removed_rows = initial_rows - len(df_cleaned)
     logger.info(
         "Data cleaning completed",
-        extra={"initial_rows": initial_rows, "cleaned_rows": len(df_cleaned), "removed_duplicates": removed_rows},
+        extra={
+            "initial_rows": initial_rows,
+            "cleaned_rows": len(df_cleaned),
+            "removed_duplicates": removed_rows,
+        },
     )
     return df_cleaned
 

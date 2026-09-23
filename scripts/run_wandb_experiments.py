@@ -60,7 +60,9 @@ def main():
             run_name=config["run_name"],
             mode="offline",
         )
-        logger.info(f"Finished W&B {config['run_name']} - F1: {metrics['f1_score']:.4f}, MAE: {metrics['mae']:.4f}")
+        logger.info(
+            f"Finished W&B {config['run_name']} - F1: {metrics['f1_score']:.4f}, MAE: {metrics['mae']:.4f}"
+        )
 
 
 if __name__ == "__main__":

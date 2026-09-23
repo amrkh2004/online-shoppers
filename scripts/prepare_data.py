@@ -2,7 +2,6 @@
 DVC Stage 1: Data Preparation script.
 """
 
-from pathlib import Path
 import pandas as pd
 import yaml
 

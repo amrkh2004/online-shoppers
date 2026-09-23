@@ -2,7 +2,8 @@
 Model training and evaluation module for prodml.
 """
 
-from typing import Dict, Any, Tuple
+from typing import Any, Dict
+
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
@@ -31,9 +32,7 @@ def train_baseline_model(
     return model
 
 
-def train_tuned_model(
-    X_train_scaled: pd.DataFrame, y_train: pd.Series
-) -> RandomForestClassifier:
+def train_tuned_model(X_train_scaled: pd.DataFrame, y_train: pd.Series) -> RandomForestClassifier:
     """
     Trains tuned Random Forest Classifier using optimal parameters found during EDA.
     """

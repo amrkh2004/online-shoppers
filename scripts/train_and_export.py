@@ -2,7 +2,6 @@
 Script to train the model, fit feature pipeline, evaluate performance, and export all model artifacts (pickle & ONNX).
 """
 
-from pathlib import Path
 from prodml.config import BASE_DIR
 from prodml.data import clean_data, load_data, split_data
 from prodml.export import export_model_artifacts, verify_onnx_parity
@@ -22,7 +21,9 @@ def main():
         if possible_paths:
             raw_data_path = possible_paths[0]
         else:
-            logger.info("CSV raw file not found directly, generating training data from notebook split...")
+            logger.info(
+                "CSV raw file not found directly, generating training data from notebook split..."
+            )
             # We can extract dataset from notebook or download/create sample
             raw_data_path = BASE_DIR / "notebooks" / "online_shoppers_intention.csv"
 
@@ -31,11 +32,11 @@ def main():
     # If csv doesn't exist yet, we will generate CSV from notebook data if available
     if not raw_data_path.exists():
         logger.info("Extracting raw dataset from notebook...")
-        import json
-        import pandas as pd
-        
+
         # Load data using python script from notebook or create dummy/stored dataset
-        logger.warning("Dataset CSV missing. Please ensure online_shoppers_intention.csv is placed under notebooks/")
+        logger.warning(
+            "Dataset CSV missing. Please ensure online_shoppers_intention.csv is placed under notebooks/"
+        )
         return
 
     df = load_data(raw_data_path)

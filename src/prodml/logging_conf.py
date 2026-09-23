@@ -7,7 +7,7 @@ import json
 import logging
 import sys
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 
 class JSONFormatter(logging.Formatter):
@@ -35,9 +35,7 @@ class JSONFormatter(logging.Formatter):
         return json.dumps(log_object)
 
 
-def setup_logger(
-    name: str = "prodml", level: int = logging.INFO
-) -> logging.Logger:
+def setup_logger(name: str = "prodml", level: int = logging.INFO) -> logging.Logger:
     """
     Configures and returns a logger with JSON formatting.
     """

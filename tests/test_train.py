@@ -1,4 +1,5 @@
 import pandas as pd
+
 from prodml.train import evaluate_model, train_baseline_model, train_tuned_model
 
 
@@ -11,7 +12,7 @@ def test_train_and_evaluate():
     )
     y = pd.Series([0, 1, 0, 1, 0, 1, 0, 1])
 
-    model_base = train_baseline_model(X, y)
+    _ = train_baseline_model(X, y)
     model_tuned = train_tuned_model(X, y)
 
     metrics = evaluate_model(model_tuned, X, y)

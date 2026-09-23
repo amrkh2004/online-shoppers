@@ -4,9 +4,9 @@ Inference prediction engine for prodml.
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List
+
 import joblib
-import numpy as np
 import pandas as pd
 
 from prodml.config import (
@@ -77,9 +77,7 @@ class OnlineShoppersPredictor:
             },
         )
 
-    def predict_dataframe(
-        self, df: pd.DataFrame, threshold: float = None
-    ) -> List[Dict[str, Any]]:
+    def predict_dataframe(self, df: pd.DataFrame, threshold: float = None) -> List[Dict[str, Any]]:
         """
         Produces predictions and probability scores for a pandas DataFrame.
         """
@@ -107,9 +105,7 @@ class OnlineShoppersPredictor:
 
         return results
 
-    def predict_dict(
-        self, record: Dict[str, Any], threshold: float = None
-    ) -> Dict[str, Any]:
+    def predict_dict(self, record: Dict[str, Any], threshold: float = None) -> Dict[str, Any]:
         """
         Produces prediction for a single dictionary record.
         """

@@ -4,6 +4,7 @@ FastAPI Service Application for Online Shoppers Purchasing Intention Prediction.
 
 from contextlib import asynccontextmanager
 from typing import Optional
+
 from fastapi import FastAPI, HTTPException, status
 
 from prodml import __version__
@@ -126,6 +127,7 @@ def predict_batch(batch_data: BatchShopperInputSchema):
     try:
         records = [item.model_dump() for item in batch_data.inputs]
         import pandas as pd
+
         df = pd.DataFrame(records)
         results = predictor.predict_dataframe(df)
         return {"predictions": results, "total_count": len(results)}

@@ -5,7 +5,8 @@ Model serialization (pickle/joblib and ONNX) and parity testing for prodml.
 import json
 import time
 from pathlib import Path
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List
+
 import joblib
 import numpy as np
 import onnxruntime as rt
@@ -86,15 +87,22 @@ def verify_onnx_parity(
     sess = rt.InferenceSession(str(model_onnx_path))
 
     # Generate synthetic or use passed sample data
-    num_features = len(joblib_model.feature_names_in_) if hasattr(joblib_model, "feature_names_in_") else 70
+    num_features = (
+        len(joblib_model.feature_names_in_) if hasattr(joblib_model, "feature_names_in_") else 70
+    )
     if sample_data is None:
+        np.random.seed(42)
         data_arr = np.random.randn(num_samples, num_features).astype(np.float32)
     else:
         data_arr = sample_data.values.astype(np.float32)
 
     # Benchmark Joblib prediction
     t0 = time.perf_counter()
-    joblib_probs = joblib_model.predict_proba(data_arr)[:, 1]
+    if hasattr(joblib_model, "feature_names_in_"):
+        joblib_df = pd.DataFrame(data_arr, columns=joblib_model.feature_names_in_)
+        joblib_probs = joblib_model.predict_proba(joblib_df)[:, 1]
+    else:
+        joblib_probs = joblib_model.predict_proba(data_arr)[:, 1]
     joblib_latency_ms = (time.perf_counter() - t0) * 1000 / num_samples
 
     # Benchmark ONNX prediction

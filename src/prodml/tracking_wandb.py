@@ -3,7 +3,8 @@ Weights & Biases (W&B) experiment tracking module for prodml.
 """
 
 import os
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional
+
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
@@ -14,9 +15,9 @@ from sklearn.metrics import (
     recall_score,
     roc_auc_score,
 )
-import wandb
 
-from prodml.config import DEFAULT_THRESHOLD, RANDOM_STATE
+import wandb
+from prodml.config import DEFAULT_THRESHOLD
 from prodml.logging_conf import logger
 
 WANDB_PROJECT_NAME = "online-shoppers-purchasing-intent"
@@ -38,7 +39,7 @@ def run_wandb_experiment(
     """
     try:
         os.environ["WANDB_MODE"] = mode
-        run = wandb.init(
+        _ = wandb.init(
             project=WANDB_PROJECT_NAME,
             name=run_name,
             config=params,
@@ -51,7 +52,7 @@ def run_wandb_experiment(
             extra={"error": str(exc)},
         )
         os.environ["WANDB_MODE"] = "disabled"
-        run = wandb.init(
+        _ = wandb.init(
             project=WANDB_PROJECT_NAME,
             name=run_name,
             config=params,

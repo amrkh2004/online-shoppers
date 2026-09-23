@@ -3,6 +3,7 @@ Feature processing and scaling utilities for prodml.
 """
 
 from typing import List, Optional, Tuple
+
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
@@ -29,9 +30,7 @@ class FeaturePipeline:
         if "Weekend" in df_encoded.columns and df_encoded["Weekend"].dtype == "bool":
             df_encoded["Weekend"] = df_encoded["Weekend"].astype(int)
 
-        cols_to_encode = [
-            col for col in CATEGORICAL_FEATURES if col in df_encoded.columns
-        ]
+        cols_to_encode = [col for col in CATEGORICAL_FEATURES if col in df_encoded.columns]
 
         if cols_to_encode:
             df_encoded = pd.get_dummies(
@@ -49,9 +48,7 @@ class FeaturePipeline:
         self.feature_columns = list(X_encoded.columns)
 
         X_scaled_arr = self.scaler.fit_transform(X_encoded)
-        X_scaled_df = pd.DataFrame(
-            X_scaled_arr, columns=self.feature_columns, index=X_train.index
-        )
+        X_scaled_df = pd.DataFrame(X_scaled_arr, columns=self.feature_columns, index=X_train.index)
 
         self.is_fitted = True
         logger.info(
@@ -73,6 +70,4 @@ class FeaturePipeline:
         X_aligned = X_encoded.reindex(columns=self.feature_columns, fill_value=0)
 
         X_scaled_arr = self.scaler.transform(X_aligned)
-        return pd.DataFrame(
-            X_scaled_arr, columns=self.feature_columns, index=X.index
-        )
+        return pd.DataFrame(X_scaled_arr, columns=self.feature_columns, index=X.index)

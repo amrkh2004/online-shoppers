@@ -2,8 +2,12 @@
 MLflow experiment tracking and model registry module for prodml.
 """
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
+
+import mlflow
+import mlflow.sklearn
 import pandas as pd
+from mlflow.tracking import MlflowClient
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
     accuracy_score,
@@ -13,9 +17,6 @@ from sklearn.metrics import (
     recall_score,
     roc_auc_score,
 )
-import mlflow
-import mlflow.sklearn
-from mlflow.tracking import MlflowClient
 
 from prodml.config import BASE_DIR, DEFAULT_THRESHOLD, RANDOM_STATE
 from prodml.logging_conf import logger
@@ -72,7 +73,9 @@ def run_mlflow_experiment(
 
         # Log parameters & metrics to MLflow
         mlflow.log_params(params)
-        mlflow.log_params({"threshold": threshold, "random_state": params.get("random_state", RANDOM_STATE)})
+        mlflow.log_params(
+            {"threshold": threshold, "random_state": params.get("random_state", RANDOM_STATE)}
+        )
         mlflow.log_metrics(metrics)
 
         # Log sklearn model artifact

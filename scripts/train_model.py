@@ -2,11 +2,9 @@
 DVC Stage 2: Model Training script.
 """
 
-from pathlib import Path
-import joblib
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
 import yaml
+from sklearn.ensemble import RandomForestClassifier
 
 from prodml.config import BASE_DIR, TARGET_COL
 from prodml.export import export_model_artifacts

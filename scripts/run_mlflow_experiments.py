@@ -72,12 +72,16 @@ def main():
             y_test=y_test,
             run_name=config["run_name"],
         )
-        logger.info(f"Finished {config['run_name']} (Run ID: {run_id}) - F1: {metrics['f1_score']:.4f}, MAE: {metrics['mae']:.4f}")
+        logger.info(
+            f"Finished {config['run_name']} (Run ID: {run_id}) - F1: {metrics['f1_score']:.4f}, MAE: {metrics['mae']:.4f}"
+        )
 
     # Register best model to Staging
     logger.info("Promoting best model run to Staging stage in MLflow Model Registry...")
     best_run_id, version = register_best_model_to_staging()
-    logger.info(f"=== Successfully Registered Best Model (Run: {best_run_id}) to Staging (Version {version}) ===")
+    logger.info(
+        f"=== Successfully Registered Best Model (Run: {best_run_id}) to Staging (Version {version}) ==="
+    )
 
 
 if __name__ == "__main__":

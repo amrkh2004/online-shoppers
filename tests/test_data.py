@@ -1,6 +1,17 @@
 import pandas as pd
 import pytest
-from prodml.data import clean_data, split_data
+
+from prodml.data import clean_data, load_data, split_data
+
+
+def test_load_data(tmp_path):
+    csv_file = tmp_path / "test_data.csv"
+    df_src = pd.DataFrame({"Administrative": [1, 2], "Revenue": [0, 1]})
+    df_src.to_csv(csv_file, index=False)
+
+    df_loaded = load_data(csv_file)
+    assert len(df_loaded) == 2
+    assert "Administrative" in df_loaded.columns
 
 
 def test_clean_data():
