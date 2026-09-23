@@ -1,0 +1,9 @@
+2026-09-23 17:34:06,824 INFO    MainThread:17392 [wandb_setup.py:_flush():81] Current SDK version is 0.30.0
+2026-09-23 17:34:06,824 INFO    MainThread:17392 [wandb_setup.py:_flush():81] Configure stats pid to 17392
+2026-09-23 17:34:06,824 INFO    MainThread:17392 [wandb_setup.py:_flush():81] Loading settings from environment variables
+2026-09-23 17:34:06,824 INFO    MainThread:17392 [wandb_init.py:setup_run_log_directory():739] Logging user logs to E:\Downloads\online-shoppers\wandb\offline-run-20260923_173406-sva571ge\logs\debug.log
+2026-09-23 17:34:06,824 INFO    MainThread:17392 [wandb_init.py:setup_run_log_directory():740] Logging internal logs to E:\Downloads\online-shoppers\wandb\offline-run-20260923_173406-sva571ge\logs\debug-internal.log
+2026-09-23 17:34:06,824 INFO    MainThread:17392 [wandb_init.py:init():783] calling init triggers
+2026-09-23 17:34:06,824 INFO    MainThread:17392 [wandb_init.py:init():788] wandb.init called with sweep_config: {}
+config: {'n_estimators': 100, 'max_depth': 10, 'min_samples_split': 5, 'random_state': 42, 'n_jobs': -1, '_wandb': {}}
+2026-09-23 17:34:06,824 INFO    MainThread:17392 [wandb_init.py:init():831] starting backend

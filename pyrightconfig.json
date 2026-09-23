@@ -1,0 +1,13 @@
+{
+  "include": [
+    "src",
+    "tests",
+    "scripts"
+  ],
+  "extraPaths": [
+    "src",
+    "C:\\Users\\Teba\\AppData\\Local\Programs\\Python\\Python313\\Lib\\site-packages"
+  ],
+  "pythonVersion": "3.13",
+  "pythonPlatform": "Windows"
+}
