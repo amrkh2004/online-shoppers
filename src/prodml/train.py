@@ -8,6 +8,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
     accuracy_score,
     f1_score,
+    mean_absolute_error,
     precision_score,
     recall_score,
     roc_auc_score,
@@ -68,6 +69,7 @@ def evaluate_model(
         "recall": float(recall_score(y_test, y_pred, zero_division=0)),
         "f1_score": float(f1_score(y_test, y_pred, zero_division=0)),
         "roc_auc": float(roc_auc_score(y_test, y_prob)),
+        "mae": float(mean_absolute_error(y_test, y_prob)),
         "threshold": threshold,
     }
 
