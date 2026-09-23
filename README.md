@@ -87,6 +87,31 @@ pytest
 
 ---
 
+## 📈 Experiment Tracking: MLflow vs Weights & Biases (W&B)
+
+Both **MLflow** and **Weights & Biases (W&B)** are integrated to track hyperparameters, model metrics (Accuracy, Precision, Recall, F1-Score, ROC-AUC, MAE), and artifacts across experiments.
+
+```bash
+# Run MLflow 3-run experiment suite & transition best model to Staging
+python scripts/run_mlflow_experiments.py
+
+# Run Weights & Biases experiment suite
+python scripts/run_wandb_experiments.py
+```
+
+### 🔬 Tool Comparison Summary
+
+| Feature / Criteria | 🧪 MLflow | ⚡ Weights & Biases (W&B) |
+| :--- | :--- | :--- |
+| **Primary Focus** | Open-source end-to-end MLOps lifecycle & Model Registry | SaaS/Cloud real-time experiment tracking & collaboration |
+| **Hosting Model** | Self-hosted (Local SQLite/S3 or Server) | Cloud-hosted dashboard with local offline fallback |
+| **Model Registry & Staging** | ✅ Built-in Model Registry & Stage transitions (`Staging`, `Production`) | Requires W&B Artifacts / Model Registry |
+| **Metrics Tracked** | Accuracy, Precision, Recall, F1, ROC-AUC, MAE | Accuracy, Precision, Recall, F1, ROC-AUC, MAE |
+| **Offline Support** | ✅ Fully native local file/SQLite store | ✅ Offline mode supported via `WANDB_MODE=offline` |
+| **Best Used For** | Standardized model governance, artifact registry, and local pipelines | Interactive dashboards, team collaboration, and hyperparameter tuning |
+
+---
+
 ## 📁 Project Tree
 
 ```text
