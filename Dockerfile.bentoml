@@ -1,0 +1,23 @@
+# Multi-stage container setup for BentoML Ride Duration Web Service (Deliverable 02)
+FROM python:3.10-slim AS base
+
+WORKDIR /app
+
+# Install dependencies
+COPY pyproject.toml .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir bentoml pandas numpy scikit-learn pydantic mlflow cloudpickle
+
+# Copy BentoML service and project files
+COPY bentoml_service/ bentoml_service/
+COPY src/ src/
+COPY bentofile.yaml .
+
+# Environment settings
+ENV PYTHONUNBUFFERED=1
+ENV BENTOML_HOME=/app/.bentoml
+
+EXPOSE 3000
+
+# Entry point for BentoML service
+CMD ["bentoml", "serve", "bentoml_service.service:RideDurationService", "--port", "3000", "--host", "0.0.0.0"]
