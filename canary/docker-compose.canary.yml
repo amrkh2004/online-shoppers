@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: canary_proxy
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - blue
+      - green
+    restart: always
+
+  blue:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: model_blue
+    environment:
+      - MODEL_VERSION=v1
+      - PORT=8000
+    expose:
+      - "8000"
+    restart: always
+
+  green:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: model_green
+    environment:
+      - MODEL_VERSION=v2
+      - PORT=8000
+    expose:
+      - "8000"
+    restart: always
