@@ -22,11 +22,13 @@ def test_vllm_streaming(
     model_name: str = "Qwen/Qwen2.5-7B-Instruct",
     prompt: str = "Explain the difference between batch inference and event-driven streaming inference in 3 bullet points.",
 ):
-    print(f"=== vLLM Client Streaming Benchmark (Deliverable 05) ===")
+    print("=== vLLM Client Streaming Benchmark (Deliverable 05) ===")
     print(f"Connecting to: {base_url} (Model: {model_name})")
 
     if OpenAI is None:
-        print("[vLLM Client WARN] openai package not installed. Operating in mock measurement mode...")
+        print(
+            "[vLLM Client WARN] openai package not installed. Operating in mock measurement mode..."
+        )
         # Simulate TTFT and throughput measurement
         start_time = time.perf_counter()
         time.sleep(0.045)  # Simulated 45ms TTFT
@@ -88,7 +90,8 @@ def test_vllm_streaming(
 def write_vllm_report(ttft_ms: float, throughput: float, model_name: str, is_mock: bool = False):
     report_path = BASE_DIR / "reports" / "vllm_performance_report.md"
     report_path.parent.mkdir(parents=True, exist_ok=True)
-    report_path.write_text(f"""# Deliverable 05: vLLM Model Serving Report
+    report_path.write_text(
+        f"""# Deliverable 05: vLLM Model Serving Report
 
 ## Server Configuration
 - **Command**: `vllm serve {model_name} --port 8000`
@@ -106,7 +109,9 @@ def write_vllm_report(ttft_ms: float, throughput: float, model_name: str, is_moc
   1. Google Colab / Kaggle T4/A100 GPU instances.
   2. Quantized models (`Qwen/Qwen2.5-1.5B-Instruct-AWQ` or `0.5B`).
   3. CPU runtime fallback via `vLLM` CPU mode or `llama.cpp`.
-""", encoding="utf-8")
+""",
+        encoding="utf-8",
+    )
     print(f"vLLM Report saved to: {report_path}")
 
 

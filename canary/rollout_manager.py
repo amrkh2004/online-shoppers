@@ -8,9 +8,7 @@ import argparse
 import re
 import subprocess
 import sys
-import time
 from pathlib import Path
-from typing import Tuple
 
 CONF_PATH = Path(__file__).resolve().parent / "nginx.conf"
 
@@ -24,7 +22,7 @@ STAGES = [
 
 def update_nginx_weights(blue_weight: int, green_weight: int, conf_file: Path = CONF_PATH) -> str:
     content = conf_file.read_text()
-    
+
     # Replace weights in upstream model_backend
     new_content = re.sub(
         r"server\s+blue:8000\s+weight=\d+;",
@@ -38,7 +36,9 @@ def update_nginx_weights(blue_weight: int, green_weight: int, conf_file: Path = 
     )
 
     conf_file.write_text(new_content)
-    print(f"[Canary] Updated {conf_file.name}: Blue weight = {blue_weight}, Green weight = {green_weight}")
+    print(
+        f"[Canary] Updated {conf_file.name}: Blue weight = {blue_weight}, Green weight = {green_weight}"
+    )
     return new_content
 
 
@@ -68,12 +68,23 @@ def reload_nginx():
 
 
 def rollback():
-    print("[Canary EMERGENCY ROLLBACK] Triggered! Reverting traffic to 100% Blue and stopping Green...")
+    print(
+        "[Canary EMERGENCY ROLLBACK] Triggered! Reverting traffic to 100% Blue and stopping Green..."
+    )
     update_nginx_weights(blue_weight=100, green_weight=0)
     if validate_nginx_config():
         reload_nginx()
     try:
-        subprocess.run(["docker", "compose", "-f", str(Path(__file__).parent / "docker-compose.canary.yml"), "stop", "green"])
+        subprocess.run(
+            [
+                "docker",
+                "compose",
+                "-f",
+                str(Path(__file__).parent / "docker-compose.canary.yml"),
+                "stop",
+                "green",
+            ]
+        )
     except Exception as e:
         print(f"[Canary WARN] Could not stop green container: {e}")
     print("[Canary ROLLBACK] Completed safely.")
@@ -82,20 +93,26 @@ def rollback():
 def execute_rollout(stage_idx: int = 0):
     stage = STAGES[stage_idx]
     print(f"=== Starting Canary Rollout {stage['name']} ===")
-    
+
     update_nginx_weights(stage["blue_weight"], stage["green_weight"])
     if not validate_nginx_config():
         rollback()
         sys.exit(1)
-        
+
     reload_nginx()
-    print(f"[Canary] Monitoring phase for {stage['duration_minutes']} minutes (p95 latency, 0% error rate)...")
+    print(
+        f"[Canary] Monitoring phase for {stage['duration_minutes']} minutes (p95 latency, 0% error rate)..."
+    )
 
 
 def main():
     parser = argparse.ArgumentParser(description="Canary Rollout Manager")
-    parser.add_argument("--stage", type=int, default=0, help="Stage index (0: 95/5, 1: 80/20, 2: 50/50, 3: 0/100)")
-    parser.add_argument("--rollback", action="store_true", help="Trigger emergency rollback to 100/0")
+    parser.add_argument(
+        "--stage", type=int, default=0, help="Stage index (0: 95/5, 1: 80/20, 2: 50/50, 3: 0/100)"
+    )
+    parser.add_argument(
+        "--rollback", action="store_true", help="Trigger emergency rollback to 100/0"
+    )
 
     args = parser.parse_args()
 

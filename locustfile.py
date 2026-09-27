@@ -4,7 +4,8 @@ Simulates concurrent traffic to BentoML & FastAPI /predict and /healthz endpoint
 """
 
 import random
-from locust import HttpUser, task, between, events
+
+from locust import HttpUser, between, task
 
 
 class RideDurationUser(HttpUser):
@@ -19,7 +20,9 @@ class RideDurationUser(HttpUser):
         }
         headers = {"Content-Type": "application/json"}
 
-        with self.client.post("/predict", json=payload, headers=headers, catch_response=True) as response:
+        with self.client.post(
+            "/predict", json=payload, headers=headers, catch_response=True
+        ) as response:
             if response.status_code == 200:
                 try:
                     res_json = response.json()

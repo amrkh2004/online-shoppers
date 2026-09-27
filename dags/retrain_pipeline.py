@@ -4,9 +4,7 @@ Schedule: @weekly (catchup=False)
 Tasks: extract -> train -> evaluate -> register (promotes to Production if MAE improves)
 """
 
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
-from typing import Dict, Any
+from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
@@ -38,6 +36,7 @@ def extract_data_task(**kwargs):
     Imports are scoped inside function for Airflow performance.
     """
     import pandas as pd
+
     from prodml.config import BASE_DIR
     from prodml.logging_conf import logger
 
@@ -46,12 +45,14 @@ def extract_data_task(**kwargs):
     staging_dir.mkdir(parents=True, exist_ok=True)
 
     # Generate or extract clean training dataset idempotently
-    sample_df = pd.DataFrame({
-        "distance_km": [2.5, 8.1, 14.3, 5.0, 19.2, 3.8, 11.5, 6.4, 22.0, 1.9],
-        "passengers": [1, 2, 1, 3, 2, 1, 4, 2, 1, 1],
-        "hour_of_day": [8, 14, 18, 9, 21, 11, 17, 8, 23, 10],
-        "duration_minutes": [10.2, 22.5, 38.0, 15.1, 48.3, 12.0, 31.4, 18.2, 55.0, 8.5],
-    })
+    sample_df = pd.DataFrame(
+        {
+            "distance_km": [2.5, 8.1, 14.3, 5.0, 19.2, 3.8, 11.5, 6.4, 22.0, 1.9],
+            "passengers": [1, 2, 1, 3, 2, 1, 4, 2, 1, 1],
+            "hour_of_day": [8, 14, 18, 9, 21, 11, 17, 8, 23, 10],
+            "duration_minutes": [10.2, 22.5, 38.0, 15.1, 48.3, 12.0, 31.4, 18.2, 55.0, 8.5],
+        }
+    )
 
     output_path = staging_dir / "extracted_rides.parquet"
     sample_df.to_parquet(output_path, index=False)
@@ -67,11 +68,16 @@ def train_model_task(**kwargs):
     import mlflow.sklearn
     import pandas as pd
     from sklearn.ensemble import RandomForestRegressor
+
     from prodml.config import BASE_DIR
     from prodml.logging_conf import logger
 
     ti = kwargs.get("ti")
-    input_file = ti.xcom_pull(task_ids="extract_task") if ti else str(BASE_DIR / "data" / "processed" / "extracted_rides.parquet")
+    input_file = (
+        ti.xcom_pull(task_ids="extract_task")
+        if ti
+        else str(BASE_DIR / "data" / "processed" / "extracted_rides.parquet")
+    )
 
     logger.info(f"Executing Airflow Task: train_model using data from {input_file}")
     df = pd.read_parquet(input_file)
@@ -103,6 +109,7 @@ def evaluate_model_task(**kwargs):
     import mlflow
     import pandas as pd
     from sklearn.metrics import mean_absolute_error
+
     from prodml.config import BASE_DIR
     from prodml.logging_conf import logger
 
@@ -115,19 +122,23 @@ def evaluate_model_task(**kwargs):
     if not run_id:
         client = mlflow.tracking.MlflowClient()
         exp = mlflow.get_experiment_by_name("ride-duration-retraining")
-        runs = client.search_runs(experiment_ids=[exp.experiment_id], order_by=["attribute.start_time DESC"])
+        runs = client.search_runs(
+            experiment_ids=[exp.experiment_id], order_by=["attribute.start_time DESC"]
+        )
         run_id = runs[0].info.run_id
 
     model_uri = f"runs:/{run_id}/model"
     candidate_model = mlflow.pyfunc.load_model(model_uri)
 
     # Test set evaluation
-    eval_df = pd.DataFrame({
-        "distance_km": [4.0, 10.0, 18.0],
-        "passengers": [1, 2, 3],
-        "hour_of_day": [9, 16, 20],
-        "duration_minutes": [13.0, 27.5, 45.0],
-    })
+    eval_df = pd.DataFrame(
+        {
+            "distance_km": [4.0, 10.0, 18.0],
+            "passengers": [1, 2, 3],
+            "hour_of_day": [9, 16, 20],
+            "duration_minutes": [13.0, 27.5, 45.0],
+        }
+    )
 
     X_test = eval_df[["distance_km", "passengers", "hour_of_day"]]
     y_test = eval_df["duration_minutes"]
@@ -151,11 +162,14 @@ def register_model_task(**kwargs):
     """
     import mlflow
     from mlflow.tracking import MlflowClient
+
     from prodml.config import BASE_DIR
     from prodml.logging_conf import logger
 
     ti = kwargs.get("ti")
-    eval_data = ti.xcom_pull(task_ids="evaluate_task") if ti else {"run_id": None, "eval_mae": 999.0}
+    eval_data = (
+        ti.xcom_pull(task_ids="evaluate_task") if ti else {"run_id": None, "eval_mae": 999.0}
+    )
 
     run_id = eval_data["run_id"]
     new_mae = eval_data["eval_mae"]
@@ -175,14 +189,20 @@ def register_model_task(**kwargs):
         prod_versions = client.get_latest_versions(model_name, stages=["Production"])
         if prod_versions:
             prod_run = client.get_run(prod_versions[0].run_id)
-            current_prod_mae = prod_run.data.metrics.get("eval_mae", prod_run.data.metrics.get("mae", 5.0))
-            logger.info(f"Current Production Model (Version {prod_versions[0].version}) MAE: {current_prod_mae:.4f}")
+            current_prod_mae = prod_run.data.metrics.get(
+                "eval_mae", prod_run.data.metrics.get("mae", 5.0)
+            )
+            logger.info(
+                f"Current Production Model (Version {prod_versions[0].version}) MAE: {current_prod_mae:.4f}"
+            )
     except Exception as e:
         logger.info(f"No existing Production model found or metric check error: {e}")
 
     # Compare MAE & Promote if improved
     if new_mae <= current_prod_mae:
-        logger.info(f"New candidate MAE ({new_mae:.4f}) is better than Production ({current_prod_mae:.4f}). Promoting to Production!")
+        logger.info(
+            f"New candidate MAE ({new_mae:.4f}) is better than Production ({current_prod_mae:.4f}). Promoting to Production!"
+        )
         client.transition_model_version_stage(
             name=model_name,
             version=mv.version,
@@ -191,7 +211,9 @@ def register_model_task(**kwargs):
         )
         logger.info(f"Successfully promoted model version {mv.version} to PRODUCTION stage.")
     else:
-        logger.info(f"New candidate MAE ({new_mae:.4f}) is not better than Production ({current_prod_mae:.4f}). Keeping in Staging.")
+        logger.info(
+            f"New candidate MAE ({new_mae:.4f}) is not better than Production ({current_prod_mae:.4f}). Keeping in Staging."
+        )
         client.transition_model_version_stage(
             name=model_name,
             version=mv.version,

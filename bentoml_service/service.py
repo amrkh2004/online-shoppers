@@ -3,12 +3,10 @@ BentoML Web Service implementation (Deliverable 02)
 Exposes micro-batched /predict and /healthz endpoints using MLflow Production model.
 """
 
-from typing import List, Union
+import bentoml
 import numpy as np
-import pandas as pd
 from pydantic import BaseModel, Field
 
-import bentoml
 
 # Pydantic Schemas for API contracts
 class PredictRequest(BaseModel):
@@ -16,9 +14,11 @@ class PredictRequest(BaseModel):
     passengers: int = Field(1, description="Number of passengers", example=2)
     hour_of_day: int = Field(12, description="Hour of day (0-23)", example=14)
 
+
 class PredictResponse(BaseModel):
     prediction: float = Field(..., description="Predicted trip duration in minutes")
     status: str = Field("success", description="Status of prediction request")
+
 
 class HealthCheckResponse(BaseModel):
     status: str = "healthy"
@@ -49,7 +49,7 @@ class RideDurationService:
         Async prediction endpoint supporting BentoML micro-batching.
         """
         features = [[request.distance_km, request.passengers, request.hour_of_day]]
-        
+
         if self.runner is not None:
             result = await self.runner.predict.async_run(features)
         else:
@@ -58,8 +58,14 @@ class RideDurationService:
                 result = model_ref.predict(features)
             except Exception:
                 # Fallback estimation if BentoML store is uninitialized
-                result = np.array([request.distance_km * 2.0 + request.passengers * 1.5 + (request.hour_of_day % 5)])
-        
+                result = np.array(
+                    [
+                        request.distance_km * 2.0
+                        + request.passengers * 1.5
+                        + (request.hour_of_day % 5)
+                    ]
+                )
+
         prediction_val = float(np.ravel(result)[0])
         return PredictResponse(prediction=prediction_val, status="success")
 

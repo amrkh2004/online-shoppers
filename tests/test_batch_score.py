@@ -1,18 +1,20 @@
 import tempfile
 from pathlib import Path
-import pandas as pd
-import pytest
 from unittest.mock import MagicMock
+
+import pandas as pd
 
 from prodml.batch_score import batch_score
 
 
 def test_batch_score_mock_model():
-    df_input = pd.DataFrame({
-        "distance_km": [5.2, 12.0, 3.1],
-        "passengers": [1, 2, 1],
-        "hour_of_day": [8, 14, 22],
-    })
+    df_input = pd.DataFrame(
+        {
+            "distance_km": [5.2, 12.0, 3.1],
+            "passengers": [1, 2, 1],
+            "hour_of_day": [8, 14, 22],
+        }
+    )
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_path = Path(tmp_dir)

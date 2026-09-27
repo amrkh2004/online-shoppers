@@ -24,6 +24,7 @@ try:
     from prodml.logging_conf import logger
 except ImportError:
     import logging
+
     logger = logging.getLogger("consumer")
     logging.basicConfig(level=logging.INFO)
     load_model_from_registry = None
@@ -44,17 +45,26 @@ def get_model(model_name: str = "RideDurationModel", stage: str = "Production"):
             try:
                 MODEL = load_model_from_registry(model_name=model_name, stage=stage)
             except Exception as e:
-                logger.warning(f"[Consumer] Registry load failed ({e}). Initializing fallback sklearn model...")
+                logger.warning(
+                    f"[Consumer] Registry load failed ({e}). Initializing fallback sklearn model..."
+                )
                 from sklearn.ensemble import RandomForestRegressor
+
                 model = RandomForestRegressor(n_estimators=10, random_state=42)
-                X_dummy = pd.DataFrame([[5.0, 1, 10], [12.0, 2, 18]], columns=["distance_km", "passengers", "hour_of_day"])
+                X_dummy = pd.DataFrame(
+                    [[5.0, 1, 10], [12.0, 2, 18]],
+                    columns=["distance_km", "passengers", "hour_of_day"],
+                )
                 y_dummy = np.array([15.0, 30.0])
                 model.fit(X_dummy, y_dummy)
                 MODEL = model
         else:
             from sklearn.ensemble import RandomForestRegressor
+
             model = RandomForestRegressor(n_estimators=10, random_state=42)
-            X_dummy = pd.DataFrame([[5.0, 1, 10]], columns=["distance_km", "passengers", "hour_of_day"])
+            X_dummy = pd.DataFrame(
+                [[5.0, 1, 10]], columns=["distance_km", "passengers", "hour_of_day"]
+            )
             model.fit(X_dummy, [15.0])
             MODEL = model
         logger.info("[Consumer] Model loaded and cached successfully in memory.")
@@ -93,14 +103,23 @@ def predict_on_event(event_payload: Dict[str, Any], model=None) -> Dict[str, Any
     return result_event
 
 
-def store_result(result_data: Dict[str, Any], storage_type: str = "file", redis_client=None, output_path: Optional[Path] = None):
+def store_result(
+    result_data: Dict[str, Any],
+    storage_type: str = "file",
+    redis_client=None,
+    output_path: Optional[Path] = None,
+):
     """
     Stores prediction result to Redis, DB, or file log.
     """
     if storage_type == "redis" and redis_client is not None:
         redis_client.xadd("ride_predictions_out", {"data": json.dumps(result_data)})
     else:
-        log_file = output_path if output_path is not None else (BASE_DIR / "data" / "consumer_predictions.log")
+        log_file = (
+            output_path
+            if output_path is not None
+            else (BASE_DIR / "data" / "consumer_predictions.log")
+        )
         log_file.parent.mkdir(parents=True, exist_ok=True)
         with open(log_file, "a", encoding="utf-8") as f:
             f.write(json.dumps(result_data) + "\n")
@@ -113,15 +132,20 @@ def run_consumer_loop(stream_key: str = "ride_events_in", group_name: str = "pre
     redis_host = os.getenv("REDIS_HOST", "localhost")
     redis_port = int(os.getenv("REDIS_PORT", 6379))
 
-    logger.info(f"[Consumer] Starting Redis Stream consumer on {redis_host}:{redis_port} stream '{stream_key}'...")
+    logger.info(
+        f"[Consumer] Starting Redis Stream consumer on {redis_host}:{redis_port} stream '{stream_key}'..."
+    )
 
     try:
         import redis
+
         r = redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
         r.ping()
         logger.info("[Consumer] Connected to Redis server.")
     except Exception as e:
-        logger.warning(f"[Consumer] Redis connection unavailable ({e}). Operating in simulation mode.")
+        logger.warning(
+            f"[Consumer] Redis connection unavailable ({e}). Operating in simulation mode."
+        )
         r = None
 
     model = get_model()
@@ -134,7 +158,9 @@ def run_consumer_loop(stream_key: str = "ride_events_in", group_name: str = "pre
 
         while True:
             try:
-                entries = r.xreadgroup(group_name, "consumer_worker_1", {stream_key: ">"}, count=10, block=2000)
+                entries = r.xreadgroup(
+                    group_name, "consumer_worker_1", {stream_key: ">"}, count=10, block=2000
+                )
                 if entries:
                     for stream, msgs in entries:
                         for msg_id, fields in msgs:
@@ -148,7 +174,12 @@ def run_consumer_loop(stream_key: str = "ride_events_in", group_name: str = "pre
     else:
         logger.info("[Consumer] Simulated 5 event executions...")
         for i in range(5):
-            evt = {"event_id": f"sim_{i}", "distance_km": 4.5 + i, "passengers": 1, "hour_of_day": 14}
+            evt = {
+                "event_id": f"sim_{i}",
+                "distance_km": 4.5 + i,
+                "passengers": 1,
+                "hour_of_day": 14,
+            }
             res = predict_on_event(evt, model=model)
             store_result(res, storage_type="file")
             time.sleep(0.1)

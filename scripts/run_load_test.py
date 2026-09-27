@@ -5,6 +5,7 @@ Script to execute headless Locust load tests and generate benchmark results (Del
 import subprocess
 import sys
 from pathlib import Path
+
 import pandas as pd
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -12,7 +13,12 @@ RESULTS_DIR = BASE_DIR / "results"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def run_locust_benchmark(host: str = "http://localhost:3000", users: int = 100, spawn_rate: int = 10, run_time: str = "30s"):
+def run_locust_benchmark(
+    host: str = "http://localhost:3000",
+    users: int = 100,
+    spawn_rate: int = 10,
+    run_time: str = "30s",
+):
     csv_prefix = RESULTS_DIR / "load"
     cmd = [
         sys.executable,
@@ -46,7 +52,20 @@ def run_locust_benchmark(host: str = "http://localhost:3000", users: int = 100, 
     if stats_csv.exists():
         df = pd.read_csv(stats_csv)
         print("=== Locust Load Test Results Summary ===")
-        print(df[["Type", "Name", "Request Count", "Failure Count", "50%", "95%", "99%", "Average Response Time"]])
+        print(
+            df[
+                [
+                    "Type",
+                    "Name",
+                    "Request Count",
+                    "Failure Count",
+                    "50%",
+                    "95%",
+                    "99%",
+                    "Average Response Time",
+                ]
+            ]
+        )
 
 
 if __name__ == "__main__":

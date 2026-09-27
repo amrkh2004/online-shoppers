@@ -1,5 +1,5 @@
-from pathlib import Path
-from canary.rollout_manager import update_nginx_weights, STAGES
+from canary.rollout_manager import STAGES, update_nginx_weights
+
 
 def test_canary_stages_config():
     assert len(STAGES) == 4
@@ -7,6 +7,7 @@ def test_canary_stages_config():
     assert STAGES[0]["green_weight"] == 5
     assert STAGES[3]["blue_weight"] == 0
     assert STAGES[3]["green_weight"] == 100
+
 
 def test_update_nginx_weights(tmp_path):
     conf_file = tmp_path / "nginx.conf"

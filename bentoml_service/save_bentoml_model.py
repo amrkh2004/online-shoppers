@@ -4,14 +4,15 @@ Script to load model from MLflow Registry and save it into BentoML Model Store (
 
 import sys
 from pathlib import Path
-import mlflow
+
 import bentoml
+import mlflow
 
 base_dir = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(base_dir / "src"))
 
-from prodml.config import BASE_DIR
-from prodml.logging_conf import logger
+from prodml.config import BASE_DIR  # noqa: E402
+from prodml.logging_conf import logger  # noqa: E402
 
 
 def save_mlflow_model_to_bentoml(
@@ -46,8 +47,9 @@ def save_mlflow_model_to_bentoml(
 
     if loaded_model is None:
         logger.warning("No MLflow model found in registry. Training fallback baseline model...")
-        from sklearn.ensemble import RandomForestRegressor
         import numpy as np
+        from sklearn.ensemble import RandomForestRegressor
+
         loaded_model = RandomForestRegressor(n_estimators=10, random_state=42)
         X_dummy = np.array([[5.0, 1.0, 10.0], [12.0, 2.0, 18.0], [2.0, 1.0, 8.0]])
         y_dummy = np.array([15.0, 30.0, 8.0])
